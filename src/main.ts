@@ -61,7 +61,7 @@ async function main(): Promise<void> {
 
 printCurrentOptions()
 // continue unless environment printout is requested
-if (!String(process.argv.slice(2).shift()).indexOf('env')) {
+if (String(process.argv.slice(2).shift()).indexOf('env') === -1) {
   main()
     .then(() => {
       logger.info('')

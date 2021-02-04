@@ -60,13 +60,16 @@ async function main(): Promise<void> {
 }
 
 printCurrentOptions()
-main()
-  .then(() => {
-    logger.info('')
-    logger.info('Finished SUCCESS')
-  })
-  .catch(e => {
-    logger.error(e)
-    logger.error('')
-    logger.error('Finished FAILED')
-  })
+// continue unless environment printout is requested
+if (!String(process.argv.slice(2).shift()).indexOf('env')) {
+  main()
+    .then(() => {
+      logger.info('')
+      logger.info('Finished SUCCESS')
+    })
+    .catch(e => {
+      logger.error(e)
+      logger.error('')
+      logger.error('Finished FAILED')
+    })
+}

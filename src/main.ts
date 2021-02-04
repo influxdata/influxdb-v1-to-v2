@@ -1,13 +1,18 @@
+import {printCurrentOptions} from './env'
 import logger from './util/logger'
 import {pairToExistingBuckets} from './util/pairRetentionPolicy'
 import {getRetentionPolicies} from './v1/v1api'
 import {createBucket, createDBRP, getBuckets, getDBRPs} from './v2/v2api'
 
 async function main(): Promise<void> {
+  logger.info('--- Read v1 retention policies ---')
   const rps = await getRetentionPolicies()
+  logger.info('--- Read v2 buckets ---')
   const buckets = await getBuckets()
+  logger.info('--- Read v2 DBRP mappings ---')
   const dbrps = await getDBRPs()
   const rpsToBuckets = pairToExistingBuckets(rps, buckets, dbrps)
+  logger.info('--- Create v2 buckets and mappings ---')
   for (const rpsToBucket of rpsToBuckets) {
     // create bucket if it does not exist
     const exists = !!rpsToBucket.bucket
@@ -54,6 +59,7 @@ async function main(): Promise<void> {
   }
 }
 
+printCurrentOptions()
 main()
   .then(() => {
     logger.info('')

@@ -1,6 +1,6 @@
 # influxdb-v1-to-v2
 
-WIP migration of databases + rp from influxdb v1 to influxdb v2.
+**WIP** migration of database metadata from InfluxDB v1 to InfluxDB v2.
 
 ## Usage
 

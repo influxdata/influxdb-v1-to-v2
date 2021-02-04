@@ -3,7 +3,6 @@ import logger from './util/logger'
 import {pairToExistingBuckets} from './util/pairRetentionPolicy'
 import {getRetentionPolicies} from './v1/v1api'
 import {createBucket, createDBRP, getBuckets, getDBRPs} from './v2/v2api'
-import colors from 'colors'
 
 async function main(): Promise<void> {
   logger.info('--- Read v1 retention policies ---')
@@ -23,17 +22,17 @@ async function main(): Promise<void> {
           rpsToBucket.bucketName,
           rpsToBucket.rp
         )
-        logger.info(colors.green(rpsToBucket.bucketName), 'bucket created')
+        logger.info(rpsToBucket.bucketName, 'bucket created')
       } catch (e) {
         logger.error(
           'v2api',
-          colors.red(rpsToBucket.bucketName),
+          rpsToBucket.bucketName,
           'bucket cannot be created:',
           e
         )
       }
     } else {
-      logger.info(colors.green(rpsToBucket.bucketName), 'bucket already exists')
+      logger.info(rpsToBucket.bucketName, 'bucket already exists')
     }
     // create mapping if it does not exit
     if (rpsToBucket.bucket) {

@@ -16,7 +16,7 @@ function getInfluxDB(): InfluxDB {
 }
 
 let orgID: string | undefined
-async function getOrgID(): Promise<string> {
+export async function getOrgID(): Promise<string> {
   if (!orgID) {
     const orgs = (
       await new OrgsAPI(getInfluxDB()).getOrgs({org: v2Options.org})

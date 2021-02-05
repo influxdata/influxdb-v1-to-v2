@@ -32,3 +32,18 @@ export interface RetentionPolicyToBucket {
   bucket?: Bucket
   dbrp?: DBRP
 }
+
+export interface V1Authorization {
+  token: string // user name
+  description?: string
+  orgID: string
+  permissions: Permission[]
+}
+export interface Permission {
+  action: 'read' | 'write'
+  resource: {
+    type: string // "buckets"
+    id: string
+    orgID: string
+  }
+}

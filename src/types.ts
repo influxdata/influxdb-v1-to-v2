@@ -19,6 +19,13 @@ export interface RetentionPolicy {
   isDefault: boolean
 }
 
+export interface User {
+  user: string
+  isAdmin: boolean
+  readDBs?: string[]
+  writeDBs?: string[]
+}
+
 export interface RetentionPolicyToBucket {
   bucketName: string
   rp: RetentionPolicy

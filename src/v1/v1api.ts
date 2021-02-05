@@ -1,10 +1,12 @@
 import fetch from 'node-fetch'
 import {v1Options} from '../env'
 import {URLSearchParams} from 'url'
-import {RetentionPolicy, V1Response, V1Result} from '../types'
+import {RetentionPolicy, User, V1Response, V1Result} from '../types'
 import parseRetentionPolicies from './parseRetentionPolicies'
 import parseShowDatabases from './parseShowDatabases'
 import logger from '../util/logger'
+import parseShowUsers from './parseShowUsers'
+import parseShowGrants from './parseShowGrants'
 
 async function v1Query(command: string): Promise<Array<V1Result>> {
   const headers =
@@ -65,4 +67,20 @@ export async function getRetentionPolicies(): Promise<RetentionPolicy[]> {
     }
   }
   return rps
+}
+export async function getUsers(): Promise<User[]> {
+  const users = parseShowUsers(await v1Query('SHOW USERS'))
+  for (const user of users) {
+    try {
+      parseShowGrants(user, await v1Query(`SHOW GRANTS FOR "${user.user}"`))
+    } catch (e) {
+      logger.warn(
+        'v1api',
+        `Ignoring grants for user ${user.user}, they cannot be retrieved!`,
+        e
+      )
+    }
+  }
+  logger.trace('v1api:getUsers', JSON.stringify(users, null, 2))
+  return users
 }

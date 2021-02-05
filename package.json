@@ -11,11 +11,10 @@
   "dependencies": {
     "@influxdata/influxdb-client": "^1.10.0",
     "@influxdata/influxdb-client-apis": "^1.10.0",
-    "colors": "^1.4.0",
+    "chalk": "^4.1.0",
     "node-fetch": "^2.6.1"
   },
   "devDependencies": {
-    "@types/color": "^3.0.1",
     "@types/node": "^14.14.24",
     "@types/node-fetch": "^2.5.8",
     "@typescript-eslint/eslint-plugin": "^2.9.0",

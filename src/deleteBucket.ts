@@ -1,5 +1,5 @@
 // a simple utility that is used during developement to drop a bucket
-import {getBuckets, deleteBucket} from './v2/v2api'
+import {getBuckets, deleteBucket} from './v2/v2-api'
 import logger from './util/logger'
 
 async function main(): Promise<void> {

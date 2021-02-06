@@ -1,9 +1,23 @@
 import {printCurrentOptions} from './env'
 import logger from './util/logger'
+import {
+  createActualV1Authorization,
+  pairGrantsToAuthorizations,
+} from './util/pairGrantsToAuthorizations'
 import {pairToExistingBuckets} from './util/pairRetentionPolicy'
 import {getRetentionPolicies, getUsers} from './v1/v1-api'
-import {createBucket, createDBRP, getBuckets, getDBRPs} from './v2/v2-api'
-import {getV1Authorizations} from './v2/v2-authv1-api'
+import {
+  createBucket,
+  createDBRP,
+  getBuckets,
+  getDBRPs,
+  getOrgID,
+} from './v2/v2-api'
+import {
+  deleteV1Authorization,
+  getV1Authorizations,
+  postV1Authorization,
+} from './v2/v2-authv1-api'
 
 async function main(): Promise<void> {
   logger.info('--- Read v1 retention policies ---')
@@ -23,7 +37,10 @@ async function main(): Promise<void> {
           rpsToBucket.bucketName,
           rpsToBucket.rp
         )
-        logger.info(rpsToBucket.bucketName, 'bucket created')
+        logger.info(
+          rpsToBucket.bucketName,
+          'bucket ${rpsToBucket.bucket?.id} created'
+        )
       } catch (e) {
         logger.error(
           'v2api',
@@ -33,7 +50,10 @@ async function main(): Promise<void> {
         )
       }
     } else {
-      logger.info(rpsToBucket.bucketName, 'bucket already exists')
+      logger.info(
+        rpsToBucket.bucketName,
+        `bucket ${rpsToBucket.bucket?.id} already exists`
+      )
     }
     // create mapping if it does not exit
     if (rpsToBucket.bucket) {
@@ -59,11 +79,58 @@ async function main(): Promise<void> {
     }
   }
   logger.info('--- Read v1 users ---')
-  await getUsers()
+  const users = await getUsers()
   logger.info('--- Read v2 authorizations for v1 users ---')
   const v1Authorizations = await getV1Authorizations()
-  logger.info('TODO', JSON.stringify(v1Authorizations, null, 2))
   logger.info('--- Create v2 authorizations for v1 users ---')
+  const userToAuthorizationArray = pairGrantsToAuthorizations(
+    users,
+    v1Authorizations
+  )
+  for (const pair of userToAuthorizationArray) {
+    if (pair.user.isAdmin) {
+      logger.info(
+        pair.user.user,
+        'user is ignored because it is an administrator'
+      )
+      continue
+    }
+    if (
+      (!pair.user.readDBs || !pair.user.readDBs.length) &&
+      (!pair.user.writeDBs || !pair.user.writeDBs.length)
+    ) {
+      logger.info(
+        pair.user.user,
+        'user is ignored because of no READ/WRITE to any database'
+      )
+      continue
+    }
+    const {
+      v1Authorization,
+      userReadBuckets,
+      userWriteBuckets,
+    } = createActualV1Authorization(pair, rpsToBuckets, await getOrgID())
+    if (v1Authorization) {
+      logger.info(pair.user.user, `user requires a new authorization in v2`)
+      if (pair.v1Authorization?.id) {
+        logger.info(` delete existing authorization ${pair.v1Authorization.id}`)
+        await deleteV1Authorization(pair.v1Authorization.id)
+      }
+      pair.v1Authorization = await postV1Authorization(v1Authorization)
+      logger.info(` authorization ${pair.v1Authorization?.id} created`)
+    } else {
+      logger.info(
+        pair.user.user,
+        `user has already a matching authorization ${pair?.v1Authorization?.id}`
+      )
+    }
+    if (userReadBuckets && userReadBuckets.length) {
+      logger.info(` read: ${userReadBuckets}`)
+    }
+    if (userWriteBuckets && userWriteBuckets.length) {
+      logger.info(` write: ${userWriteBuckets}`)
+    }
+  }
 }
 
 printCurrentOptions()

@@ -34,10 +34,12 @@ export interface RetentionPolicyToBucket {
 }
 
 export interface V1Authorization {
+  id?: string
   token: string // user name
   description?: string
   orgID: string
   permissions: Permission[]
+  status: string // "active"
 }
 export interface Permission {
   action: 'read' | 'write'
@@ -46,4 +48,9 @@ export interface Permission {
     id: string
     orgID: string
   }
+}
+
+export interface UserToV1Authorization {
+  user: User
+  v1Authorization?: V1Authorization
 }

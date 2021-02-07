@@ -1,7 +1,6 @@
 /* eslint-disable no-console */
 import chalk from 'chalk'
-
-const TRACE_ENABLED = !!(process.env['TRACE'] && process.env['TRACE'] !== '0')
+import {toolOptions} from '../env'
 
 const logger = {
   info(...args: unknown[]): void {
@@ -26,7 +25,7 @@ const logger = {
     console.warn(chalk.yellow(category))
   },
   trace(category: string, ...args: unknown[]): void {
-    if (TRACE_ENABLED) {
+    if (toolOptions.trace) {
       console.log(chalk.gray('TRACE'), chalk.gray(category), ...args)
     }
   },

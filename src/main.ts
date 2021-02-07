@@ -152,7 +152,7 @@ async function main(): Promise<void> {
     const toWrite = grantsToAuthorizations
       .filter(x => !x.user.isAdmin)
       .map(x => ({
-        user: x.user.user,
+        name: x.user.user,
         password: '',
         authorizationId: x.v1Authorization?.id || '',
       }))

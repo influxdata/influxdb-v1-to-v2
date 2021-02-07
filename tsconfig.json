@@ -2,7 +2,8 @@
   "compilerOptions": {
     "lib": ["es2015", "es2017"],
     "target": "ES2015",
-    "types": ["node",],
+    "module": "commonjs",
+    "types": ["node"],
     "allowJs": false,
     "declaration": true,
     "declarationMap": true,

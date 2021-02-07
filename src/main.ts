@@ -147,6 +147,18 @@ async function main(): Promise<void> {
     )
     logger.info(toolOptions.outMappingFile, 'written')
   }
+  if (toolOptions.outUsersFile) {
+    logger.info('--- Write users file ---')
+    const toWrite = grantsToAuthorizations
+      .filter(x => !x.user.isAdmin)
+      .map(x => ({
+        user: x.user.user,
+        password: '',
+        authorizationId: x.v1Authorization?.id || '',
+      }))
+    writeFileSync(toolOptions.outUsersFile, JSON.stringify(toWrite, null, 2))
+    logger.info(toolOptions.outUsersFile, 'written')
+  }
 }
 
 loadOptions()

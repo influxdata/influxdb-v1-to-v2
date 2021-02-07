@@ -6,7 +6,7 @@
     "allowJs": false,
     "declaration": true,
     "declarationMap": true,
-    "outDir": "./dist",
+    "outDir": "./build",
     "removeComments": false,
     "strict": true,
     "strictPropertyInitialization": false,
@@ -15,5 +15,6 @@
     "esModuleInterop": true,
     "sourceMap": true,
     "resolveJsonModule": true
-  }
+  },
+  "include": ["src/**/*"]
 }

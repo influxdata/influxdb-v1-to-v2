@@ -4,9 +4,10 @@
   "version": "0.4.0",
   "license": "MIT",
   "scripts": {
+    "build": "tsc",
+    "lint": "eslint 'src/**/*.ts' 'src/*.ts'",
     "main": "ts-node src/main.ts",
-    "deleteBucket": "ts-node src/deleteBucket.ts",
-    "lint": "eslint 'src/**/*.ts' 'src/*.ts'"
+    "deleteBucket": "ts-node src/deleteBucket.ts"
   },
   "dependencies": {
     "@influxdata/influxdb-client": "^1.10.0",

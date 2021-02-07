@@ -1,4 +1,5 @@
-import {printCurrentOptions} from './env'
+import {writeFileSync} from 'fs'
+import {printCurrentOptions, loadOptions, toolOptions} from './env'
 import logger from './util/logger'
 import {
   createActualV1Authorization,
@@ -83,11 +84,11 @@ async function main(): Promise<void> {
   logger.info('--- Read v2 authorizations for v1 users ---')
   const v1Authorizations = await getV1Authorizations()
   logger.info('--- Create v2 authorizations for v1 users ---')
-  const userToAuthorizationArray = pairGrantsToAuthorizations(
+  const grantsToAuthorizations = pairGrantsToAuthorizations(
     users,
     v1Authorizations
   )
-  for (const pair of userToAuthorizationArray) {
+  for (const pair of grantsToAuthorizations) {
     if (pair.user.isAdmin) {
       logger.info(
         pair.user.user,
@@ -131,8 +132,24 @@ async function main(): Promise<void> {
       logger.info(` write: ${userWriteBuckets}`)
     }
   }
+  if (toolOptions.outMappingFile) {
+    logger.info('--- Write mapping file ---')
+    writeFileSync(
+      toolOptions.outMappingFile,
+      JSON.stringify(
+        {
+          rpsToBuckets,
+          grantsToAuthorizations,
+        },
+        null,
+        2
+      )
+    )
+    logger.info(toolOptions.outMappingFile, 'written')
+  }
 }
 
+loadOptions()
 printCurrentOptions()
 // continue unless environment printout is requested
 if (String(process.argv.slice(2).shift()).indexOf('env') === -1) {

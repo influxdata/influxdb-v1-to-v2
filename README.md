@@ -18,3 +18,4 @@
 4. observe console to see that
    - buckets are created for each database/retention policy pair
    - DBRP mapping are created in v2 to map v1 db/rp pait to a v2 bucket, this mapping is required for influxql queries to work properly
+   - v1-authorizations are created in v2 to map user grants (excluding admin users)

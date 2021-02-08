@@ -156,7 +156,8 @@ async function main(): Promise<void> {
         },
         null,
         2
-      )
+      ),
+      {encoding: 'utf-8'}
     )
     logger.info(localOptions.outMappingFile, 'written')
   }
@@ -169,7 +170,9 @@ async function main(): Promise<void> {
         password: '',
         authorizationId: x.v1Authorization?.id || '',
       }))
-    writeFileSync(localOptions.outUsersFile, JSON.stringify(toWrite, null, 2))
+    writeFileSync(localOptions.outUsersFile, JSON.stringify(toWrite, null, 2), {
+      encoding: 'utf-8',
+    })
     logger.info(localOptions.outUsersFile, 'written')
   }
 }

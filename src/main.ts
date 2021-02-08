@@ -189,14 +189,20 @@ const options = {
       'INFLUX_ORG',
       'target organization name'
     ),
-    option('trace', toolOptions, 'trace', 'TRACE', 'turns on trace logging'),
+    option(
+      'trace',
+      toolOptions,
+      'trace',
+      'TRACE',
+      'turns on trace logging',
+      booleanOptionParser
+    ),
     option(
       'out-users',
       toolOptions,
       'outUsersFile',
       'OUT_USERS',
-      'write v1 users to a file',
-      booleanOptionParser
+      'write v1 users to a file'
     ),
     option(
       'out-mapping',

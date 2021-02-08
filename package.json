@@ -7,7 +7,7 @@
     "build": "tsc",
     "lint": "eslint 'src/**/*.ts' 'src/*.ts'",
     "main": "ts-node src/main.ts",
-    "deleteBucket": "ts-node src/deleteBucket.ts"
+    "delete-bucket": "ts-node src/delete-bucket.ts"
   },
   "dependencies": {
     "@influxdata/influxdb-client": "^1.10.0",

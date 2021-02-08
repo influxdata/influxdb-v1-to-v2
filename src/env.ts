@@ -56,9 +56,12 @@ export function printCurrentOptions(cmdLine: CmdLine): void {
   }
 }
 
-export function parseOptions(cmdLine: CmdLine): void {
+export function parseOptions(
+  cmdLine: CmdLine,
+  parseOptions: {allowExtraArgs?: boolean} = {}
+): string[] {
   const argv = minimist(process.argv.slice(2))
-  if (argv._ && argv._.length) {
+  if (!parseOptions.allowExtraArgs && argv._ && argv._.length) {
     logger.error('Unrecognized arguments:', argv._)
     help(cmdLine)
     process.exit(1)
@@ -82,4 +85,5 @@ export function parseOptions(cmdLine: CmdLine): void {
       option.target[option.key] = val
     }
   }
+  return argv._
 }

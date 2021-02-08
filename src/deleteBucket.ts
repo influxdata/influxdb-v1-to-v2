@@ -1,19 +1,25 @@
 // a simple utility that is used during developement to drop a bucket
 import {getBuckets, deleteBucket} from './v2/v2-api'
 import logger from './util/logger'
+import {
+  option,
+  parseOptions,
+  printCurrentOptions,
+  toolOptions,
+  v2Options,
+} from './env'
 
-async function main(): Promise<void> {
-  const toDelete = process.argv.slice(2)
-  if (!toDelete.length) {
+async function main(bucketNames: string[]): Promise<void> {
+  if (!bucketNames.length) {
     logger.error('No buckets to delete specified as arguments!')
     return
   }
-  logger.info('Trying to delete buckets: ', toDelete)
+  logger.info('Trying to delete buckets: ', bucketNames)
   const buckets = await getBuckets()
   const deleted: Record<string, boolean> = {}
 
   for (const bucket of buckets) {
-    if (toDelete.indexOf(bucket.name) >= 0) {
+    if (bucketNames.indexOf(bucket.name) >= 0) {
       deleted[bucket.name] = true
       try {
         await deleteBucket(bucket.id as string)
@@ -23,14 +29,31 @@ async function main(): Promise<void> {
       }
     }
   }
-  toDelete.forEach(x => {
+  bucketNames.forEach(x => {
     if (!deleted[x]) {
       logger.warn(`${x} bucket skipped, not found`)
     }
   })
 }
 
-main()
+const options = {
+  opts: [
+    option('v2-url', v2Options, 'url', 'INFLUX_URL', 'target base url'),
+    option('v2-token', v2Options, 'token', 'INFLUX_TOKEN', 'target token'),
+    option(
+      'v2-org',
+      v2Options,
+      'org',
+      'INFLUX_ORG',
+      'target organization name'
+    ),
+    option('trace', toolOptions, 'trace', 'TRACE', 'turns on trace logging'),
+  ],
+}
+const names = parseOptions(options, {allowExtraArgs: true})
+printCurrentOptions(options)
+
+main(names)
   .then(() => {
     logger.info('')
     logger.info('Finished SUCCESS')

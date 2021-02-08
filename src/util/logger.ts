@@ -21,6 +21,7 @@ const logger = {
     if (args.length) {
       args[0] = chalk.yellow(String(args[0]))
       console.warn(chalk.yellow('WARN'), chalk.yellow(category), ...args)
+      return
     }
     console.warn(chalk.yellow(category))
   },

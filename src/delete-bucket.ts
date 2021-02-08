@@ -50,7 +50,7 @@ const options = {
       'buckets',
       'INFLUX_BUCKETS',
       'bucket names',
-      false,
+      true,
       listOptionParser
     ),
   ],

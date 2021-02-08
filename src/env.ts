@@ -151,4 +151,23 @@ export function parseOptions(cmdLine: CmdLine): void {
       option.target[option.key] = (option.convertValue || identityFn)(val)
     }
   }
+  // check required arguments
+  for (const option of cmdLine.opts) {
+    if (option.required) {
+      const val = option.target[option.key]
+      if (
+        val === null ||
+        val === undefined ||
+        ((typeof val === 'string' || Array.isArray(val)) && !val.length)
+      ) {
+        logger.error(
+          `Missing required ${
+            option.option === '_' ? 'arguments' : 'option --' + option.option
+          }`
+        )
+        help(cmdLine)
+        process.exit(1)
+      }
+    }
+  }
 }

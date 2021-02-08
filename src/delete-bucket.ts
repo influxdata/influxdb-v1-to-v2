@@ -2,6 +2,7 @@
 import {getBuckets, deleteBucket} from './v2/v2-api'
 import logger from './util/logger'
 import {
+  booleanOptionParser,
   listOptionParser,
   option,
   parseOptions,
@@ -51,7 +52,14 @@ const options = {
       'INFLUX_ORG',
       'target organization name'
     ),
-    option('trace', toolOptions, 'trace', 'TRACE', 'turns on trace logging'),
+    option(
+      'trace',
+      toolOptions,
+      'trace',
+      'TRACE',
+      'turns on trace logging',
+      booleanOptionParser
+    ),
     option(
       '_',
       deleteOptions,

@@ -55,6 +55,6 @@ export function loadOptions(): void {
   setOpt('v2-token', v2Options, 'token')
   setOpt('v2-org', v2Options, 'org')
   setOpt('trace', toolOptions, 'trace')
-  setOpt('out-users-file', toolOptions, 'outUsersFile')
-  setOpt('out-mapping-file', toolOptions, 'outMappingFile')
+  setOpt('out-users', toolOptions, 'outUsersFile')
+  setOpt('out-mapping', toolOptions, 'outMappingFile')
 }

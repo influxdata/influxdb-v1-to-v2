@@ -44,15 +44,23 @@ export interface CmdLine {
 export function help(cmdLine: CmdLine): void {
   logger.info('Available arguments:')
   for (const opt of cmdLine.opts) {
+    const currentValue =
+      opt.key.endsWith('token') || opt.key.endsWith('password')
+        ? '***'
+        : opt.target[opt.key] || ''
     logger.info(
       ` --${opt.option}`.padEnd(15),
-      `${opt.help} (${opt.envKey}=${opt.target[opt.key] || ''})`
+      `${opt.help} (${opt.envKey}=${currentValue})`
     )
   }
 }
 export function printCurrentOptions(cmdLine: CmdLine): void {
   for (const opt of cmdLine.opts) {
-    logger.info(`${opt.envKey}=${opt.target[opt.key] || ''}`)
+    const currentValue =
+      opt.key.endsWith('token') || opt.key.endsWith('password')
+        ? '***'
+        : opt.target[opt.key] || ''
+    logger.info(`${opt.envKey}=${currentValue}`)
   }
 }
 

@@ -6,6 +6,7 @@ import {
   v1Options,
   v2Options,
   parseOptions,
+  booleanOptionParser,
 } from './env'
 import logger from './util/logger'
 import {
@@ -194,7 +195,8 @@ const options = {
       toolOptions,
       'outUsersFile',
       'OUT_USERS',
-      'write v1 users to a file'
+      'write v1 users to a file',
+      booleanOptionParser
     ),
     option(
       'out-mapping',

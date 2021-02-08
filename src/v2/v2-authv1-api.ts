@@ -1,4 +1,4 @@
-import fetch from 'node-fetch'
+import fetch, {Response} from 'node-fetch'
 import {v2Options} from '../env'
 import {URLSearchParams} from 'url'
 import {getOrgID} from './v2-api'
@@ -12,7 +12,7 @@ async function v2Request(
   path: string,
   params?: Record<string, string>,
   body?: string
-): Promise<unknown> {
+): Promise<Response> {
   const headers = {
     authorization: `Token ${v2Options.token}`,
     accept: 'application/json',
@@ -36,15 +36,13 @@ async function v2Request(
       `v2Request at ${path} failed on ${response.statusText}: ${text}`
     )
   }
-  if (method === 'DELETE') {
-    return response.text()
-  }
-  return await response.json()
+  return response
 }
 
 export async function getV1Authorizations(): Promise<V1Authorization[]> {
   const orgID = await getOrgID()
-  const response = (await v2Request('GET', prefixAuthorization, {orgID})) as {
+  const httpResponse = await v2Request('GET', prefixAuthorization, {orgID})
+  const response = (await httpResponse.json()) as {
     authorizations: V1Authorization[]
   }
   const retVal = response.authorizations || []
@@ -58,10 +56,23 @@ export async function deleteV1Authorization(id: string): Promise<void> {
 export async function postV1Authorization(
   body: V1Authorization
 ): Promise<V1Authorization> {
-  return v2Request(
+  const response = await v2Request(
     'POST',
     prefixAuthorization,
     undefined,
     JSON.stringify(body)
-  ) as Promise<V1Authorization>
+  )
+  return response.json() as Promise<V1Authorization>
+}
+
+export async function postPassword(
+  authorizationId: string,
+  password: string
+): Promise<void> {
+  await v2Request(
+    'POST',
+    [prefixAuthorization, authorizationId, 'password'].join('/'),
+    undefined,
+    JSON.stringify({password})
+  )
 }

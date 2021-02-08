@@ -92,16 +92,31 @@ export interface CmdLine {
 }
 
 export function help(cmdLine: CmdLine): void {
-  logger.info('Available arguments:')
+  logger.info('Options:')
+  let args: Option | undefined = undefined
   for (const opt of cmdLine.opts) {
     const currentValue =
-      opt.key.endsWith('token') || opt.key.endsWith('password')
+      (opt.key.endsWith('token') || opt.key.endsWith('password')) &&
+      opt.target[opt.key]
         ? '***'
         : opt.target[opt.key]
-    const optionName = opt.option === '_' ? ' arguments' : ` --${opt.option}`
+    if (opt.option === '_') {
+      args = opt
+      continue
+    }
     logger.info(
-      optionName.padEnd(15),
-      `${opt.help} (${opt.envKey}=${currentValue})`
+      ` --${opt.option}`.padEnd(15),
+      `${opt.help} (${opt.required ? 'required, ' : ''}${
+        opt.envKey
+      }=${currentValue})`
+    )
+  }
+  if (args) {
+    logger.info('Arguments:')
+    logger.info(
+      ` ${args.help} (${args.required ? 'required, ' : ''}${args.envKey}=${
+        args.target[args.key]
+      })`
     )
   }
 }

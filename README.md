@@ -10,8 +10,8 @@
       - InfluxDB v1 and v2 connection options are required
    1. observe console to see that
       - buckets are created for each database/retention policy pair
-      - DBRP mapping are created in v2 to map v1 db/rp pait to a v2 bucket, this mapping is required for influxql queries to work properly
-      - v1-authorizations are created in v2 to map user grants (excluding admin users)
+      - DBRP mapping are created in v2 to map v1 db/rp pair to a v2 bucket, this mapping is required for influxql queries to work properly
+      - v1-authorizations are created in v2 to map user grants (excluding admin users) to the created buckets
       - user password cannot be migrated, use `--out-users` option to create file that you can later use to setup user passwords
 1. Set passwords for migrated users
    1. modify users file created in the previous step with `--out-users` options, specify password for each paricular user in the file, or rely 
@@ -19,5 +19,5 @@
    1. `yarn set-passwords --help` shows help with default and required options
       - `--users-file` and InfluxDB v2 connection options are required
    1. run `yarn set-password` with required parameters specified either in environment variables or in command-line options
-   1. observer console to see how/whether  passwords are set
+   1. observe console to see how/whether passwords are set
 

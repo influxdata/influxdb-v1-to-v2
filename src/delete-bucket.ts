@@ -2,6 +2,7 @@
 import {getBuckets, deleteBucket} from './v2/v2-api'
 import logger from './util/logger'
 import {
+  listOptionParser,
   option,
   parseOptions,
   printCurrentOptions,
@@ -36,6 +37,9 @@ async function main(bucketNames: string[]): Promise<void> {
   })
 }
 
+const deleteOptions = {
+  buckets: [],
+}
 const options = {
   opts: [
     option('v2-url', v2Options, 'url', 'INFLUX_URL', 'target base url'),
@@ -48,12 +52,20 @@ const options = {
       'target organization name'
     ),
     option('trace', toolOptions, 'trace', 'TRACE', 'turns on trace logging'),
+    option(
+      '_',
+      deleteOptions,
+      'buckets',
+      'INFLUX_BUCKETS',
+      'bucket names',
+      listOptionParser
+    ),
   ],
 }
-const names = parseOptions(options, {allowExtraArgs: true})
+parseOptions(options)
 printCurrentOptions(options)
 
-main(names)
+main(deleteOptions.buckets)
   .then(() => {
     logger.info('')
     logger.info('Finished SUCCESS')

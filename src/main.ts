@@ -1,5 +1,12 @@
 import {writeFileSync} from 'fs'
-import {printCurrentOptions, loadOptions, toolOptions} from './env'
+import {
+  printCurrentOptions,
+  toolOptions,
+  option,
+  v1Options,
+  v2Options,
+  parseOptions,
+} from './env'
 import logger from './util/logger'
 import {
   createActualV1Authorization,
@@ -161,8 +168,45 @@ async function main(): Promise<void> {
   }
 }
 
-loadOptions()
-printCurrentOptions()
+const options = {
+  opts: [
+    option('v1-url', v1Options, 'url', 'V1_INFLUX_URL', 'source base URL'),
+    option('v1-user', v1Options, 'user', 'V1_INFLUX_USER', 'source user'),
+    option(
+      'v1-password',
+      v1Options,
+      'password',
+      'V1_INFLUX_PASSWORD',
+      'source password'
+    ),
+    option('v2-url', v2Options, 'url', 'INFLUX_URL', 'target base url'),
+    option('v2-token', v2Options, 'token', 'INFLUX_TOKEN', 'target token'),
+    option(
+      'v2-org',
+      v2Options,
+      'org',
+      'INFLUX_ORG',
+      'target organization name'
+    ),
+    option('trace', toolOptions, 'trace', 'TRACE', 'turns on trace logging'),
+    option(
+      'out-users',
+      toolOptions,
+      'outUsersFile',
+      'OUT_USERS',
+      'write v1 users to a file'
+    ),
+    option(
+      'out-mapping',
+      toolOptions,
+      'outMappingFile',
+      'OUT_MAPPING',
+      'write result v1 to v2 mapping to a file'
+    ),
+  ],
+}
+parseOptions(options)
+printCurrentOptions(options)
 // continue unless environment printout is requested
 if (String(process.argv.slice(2).shift()).indexOf('env') === -1) {
   main()

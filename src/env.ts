@@ -17,44 +17,69 @@ export const v1Options = {
 
 /** Tool options */
 export const toolOptions = {
-  trace: !!(process.env['TRACE'] && process.env['TRACE'] !== 'off'),
+  trace: process.env['TRACE'],
   outUsersFile: process.env['OUT_USERS'],
   outMappingFile: process.env['OUT_MAPPING'],
 }
-export function printCurrentOptions(): void {
-  logger.info('--- V1 environment options ---')
-  logger.info(`V1_INFLUX_URL=${v1Options.url}`)
-  logger.info(`V1_INFLUX_USER=${v1Options.user}`)
-  logger.info(`V1_INFLUX_PASSWORD=${v1Options.password}`)
-  logger.info('--- V2 environment options ---')
-  logger.info(`INFLUX_URL=${v2Options.url}`)
-  logger.info(`INFLUX_ORG=${v2Options.org}`)
-  logger.info(`INFLUX_TOKEN=${v2Options.token}`)
-  logger.info('--- Tool options ---')
-  logger.info(`TRACE=${toolOptions.trace ? 'on' : 'off'}`)
-  logger.info(`OUT_USERS=${toolOptions.outUsersFile || ''}`)
-  logger.info(`OUT_MAPPING=${toolOptions.outMappingFile || ''}`)
+export interface Option {
+  option: string
+  target: Record<string, unknown>
+  key: string
+  envKey: string
+  help: string
+}
+export function option(
+  option: string,
+  target: Record<string, unknown>,
+  key: string,
+  envKey: string,
+  help: string
+): Option {
+  return {option, target, key, envKey, help}
+}
+export interface CmdLine {
+  opts: Option[]
 }
 
-export function loadOptions(): void {
+export function help(cmdLine: CmdLine): void {
+  logger.info('Available arguments:')
+  for (const opt of cmdLine.opts) {
+    logger.info(
+      ` --${opt.option}`.padEnd(15),
+      `${opt.help} (${opt.envKey}=${opt.target[opt.key] || ''})`
+    )
+  }
+}
+export function printCurrentOptions(cmdLine: CmdLine): void {
+  for (const opt of cmdLine.opts) {
+    logger.info(`${opt.envKey}=${opt.target[opt.key] || ''}`)
+  }
+}
+
+export function parseOptions(cmdLine: CmdLine): void {
   const argv = minimist(process.argv.slice(2))
-  function setOpt(
-    opt: string,
-    target: Record<string, unknown>,
-    targetKey: string
-  ): void {
-    const val = argv[opt]
+  if (argv._ && argv._.length) {
+    logger.error('Unrecognized arguments:', argv._)
+    help(cmdLine)
+    process.exit(1)
+  }
+  const optionMap = cmdLine.opts.reduce((acc, val) => {
+    acc[val.option] = val
+    return acc
+  }, {} as Record<string, Option>)
+  for (const key of Object.keys(argv)) {
+    if (key === '_' || key === '--') {
+      continue // ignore minimist builtins
+    }
+    const option = optionMap[key]
+    if (!option) {
+      logger.error('Unrecognized option:', key)
+      help(cmdLine)
+      process.exit(1)
+    }
+    const val = argv[key]
     if (val) {
-      target[targetKey] = val
+      option.target[option.key] = val
     }
   }
-  setOpt('v1-url', v1Options, 'url')
-  setOpt('v1-user', v1Options, 'user')
-  setOpt('v1-password', v1Options, 'password')
-  setOpt('v2-url', v2Options, 'url')
-  setOpt('v2-token', v2Options, 'token')
-  setOpt('v2-org', v2Options, 'org')
-  setOpt('trace', toolOptions, 'trace')
-  setOpt('out-users', toolOptions, 'outUsersFile')
-  setOpt('out-mapping', toolOptions, 'outMappingFile')
 }

@@ -18,8 +18,6 @@ export const v1Options = {
 /** Tool options */
 export const toolOptions = {
   trace: false,
-  outUsersFile: '',
-  outMappingFile: '',
 }
 export interface Option {
   option: string
@@ -28,6 +26,7 @@ export interface Option {
   envKey: string
   help: string
   convertValue?: (v: unknown) => unknown
+  required?: boolean
 }
 const identityFn = (v: unknown): unknown => v
 export const booleanOptionParser = (v: unknown): unknown => !!v
@@ -46,10 +45,48 @@ export function option(
   key: string,
   envKey: string,
   help: string,
+  required = false,
   convertValue: (v: unknown) => unknown = identityFn
 ): Option {
-  return {option, target, key, envKey, help, convertValue}
+  return {option, target, key, envKey, help, convertValue, required}
 }
+
+export const v1OptionDefinitions = [
+  option('v1-url', v1Options, 'url', 'V1_INFLUX_URL', 'source base URL', true),
+  option('v1-user', v1Options, 'user', 'V1_INFLUX_USER', 'source user', true),
+  option(
+    'v1-password',
+    v1Options,
+    'password',
+    'V1_INFLUX_PASSWORD',
+    'source password',
+    true
+  ),
+]
+export const v2OptionDefinitions = [
+  option('v2-url', v2Options, 'url', 'INFLUX_URL', 'target base url', true),
+  option('v2-token', v2Options, 'token', 'INFLUX_TOKEN', 'target token', true),
+  option(
+    'v2-org',
+    v2Options,
+    'org',
+    'INFLUX_ORG',
+    'target organization name',
+    true
+  ),
+]
+export const toolOptionDefinitions = [
+  option(
+    'trace',
+    toolOptions,
+    'trace',
+    'TRACE',
+    'turns on trace logging',
+    false,
+    booleanOptionParser
+  ),
+]
+
 export interface CmdLine {
   opts: Option[]
 }

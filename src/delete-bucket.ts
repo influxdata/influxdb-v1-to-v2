@@ -2,13 +2,12 @@
 import {getBuckets, deleteBucket} from './v2/v2-api'
 import logger from './util/logger'
 import {
-  booleanOptionParser,
   listOptionParser,
   option,
   parseOptions,
   printCurrentOptions,
-  toolOptions,
-  v2Options,
+  toolOptionDefinitions,
+  v2OptionDefinitions,
 } from './env'
 
 async function main(bucketNames: string[]): Promise<void> {
@@ -43,29 +42,15 @@ const deleteOptions = {
 }
 const options = {
   opts: [
-    option('v2-url', v2Options, 'url', 'INFLUX_URL', 'target base url'),
-    option('v2-token', v2Options, 'token', 'INFLUX_TOKEN', 'target token'),
-    option(
-      'v2-org',
-      v2Options,
-      'org',
-      'INFLUX_ORG',
-      'target organization name'
-    ),
-    option(
-      'trace',
-      toolOptions,
-      'trace',
-      'TRACE',
-      'turns on trace logging',
-      booleanOptionParser
-    ),
+    ...v2OptionDefinitions,
+    ...toolOptionDefinitions,
     option(
       '_',
       deleteOptions,
       'buckets',
       'INFLUX_BUCKETS',
       'bucket names',
+      false,
       listOptionParser
     ),
   ],

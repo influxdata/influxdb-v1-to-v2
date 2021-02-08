@@ -3,10 +3,10 @@ import {
   printCurrentOptions,
   toolOptions,
   option,
-  v1Options,
-  v2Options,
   parseOptions,
-  booleanOptionParser,
+  v1OptionDefinitions,
+  v2OptionDefinitions,
+  toolOptionDefinitions,
 } from './env'
 import logger from './util/logger'
 import {
@@ -27,6 +27,11 @@ import {
   getV1Authorizations,
   postV1Authorization,
 } from './v2/v2-authv1-api'
+
+const localOptions = {
+  outUsersFile: '',
+  outMappingFile: '',
+}
 
 async function main(): Promise<void> {
   logger.info('--- Read v1 retention policies ---')
@@ -140,10 +145,10 @@ async function main(): Promise<void> {
       logger.info(` write: ${userWriteBuckets}`)
     }
   }
-  if (toolOptions.outMappingFile) {
+  if (localOptions.outMappingFile) {
     logger.info('--- Write mapping file ---')
     writeFileSync(
-      toolOptions.outMappingFile,
+      localOptions.outMappingFile,
       JSON.stringify(
         {
           rpsToBuckets,
@@ -153,9 +158,9 @@ async function main(): Promise<void> {
         2
       )
     )
-    logger.info(toolOptions.outMappingFile, 'written')
+    logger.info(localOptions.outMappingFile, 'written')
   }
-  if (toolOptions.outUsersFile) {
+  if (localOptions.outUsersFile) {
     logger.info('--- Write users file ---')
     const toWrite = grantsToAuthorizations
       .filter(x => !x.user.isAdmin)
@@ -164,44 +169,21 @@ async function main(): Promise<void> {
         password: '',
         authorizationId: x.v1Authorization?.id || '',
       }))
-    writeFileSync(toolOptions.outUsersFile, JSON.stringify(toWrite, null, 2))
-    logger.info(toolOptions.outUsersFile, 'written')
+    writeFileSync(localOptions.outUsersFile, JSON.stringify(toWrite, null, 2))
+    logger.info(localOptions.outUsersFile, 'written')
   }
 }
 
 const options = {
   opts: [
-    option('v1-url', v1Options, 'url', 'V1_INFLUX_URL', 'source base URL'),
-    option('v1-user', v1Options, 'user', 'V1_INFLUX_USER', 'source user'),
-    option(
-      'v1-password',
-      v1Options,
-      'password',
-      'V1_INFLUX_PASSWORD',
-      'source password'
-    ),
-    option('v2-url', v2Options, 'url', 'INFLUX_URL', 'target base url'),
-    option('v2-token', v2Options, 'token', 'INFLUX_TOKEN', 'target token'),
-    option(
-      'v2-org',
-      v2Options,
-      'org',
-      'INFLUX_ORG',
-      'target organization name'
-    ),
-    option(
-      'trace',
-      toolOptions,
-      'trace',
-      'TRACE',
-      'turns on trace logging',
-      booleanOptionParser
-    ),
+    ...v1OptionDefinitions,
+    ...v2OptionDefinitions,
+    ...toolOptionDefinitions,
     option(
       'out-users',
       toolOptions,
       'outUsersFile',
-      'OUT_USERS',
+      'USERS_FILE',
       'write v1 users to a file'
     ),
     option(

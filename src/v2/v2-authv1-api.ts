@@ -1,9 +1,9 @@
 import fetch, {Response} from 'node-fetch'
-import {v2Options} from '../env'
 import {URLSearchParams} from 'url'
 import {getOrgID} from './v2-api'
 import {V1Authorization} from '../types'
 import logger from '../util/logger'
+import {v2Options} from './options'
 
 const prefixAuthorization = '/private/legacy/authorizations'
 

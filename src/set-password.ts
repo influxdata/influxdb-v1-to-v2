@@ -6,10 +6,10 @@ import {
   printCurrentOptions,
   requiredValidator,
   toolOptionDefinitions,
-  v2OptionDefinitions,
 } from './env'
 import {readFileSync} from 'fs'
 import {getV1Authorizations, postPassword} from './v2/v2-authv1-api'
+import {v2OptionDefinitions} from './v2/options'
 
 const localOptions = {
   usersFile: '',

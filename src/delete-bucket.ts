@@ -8,8 +8,8 @@ import {
   printCurrentOptions,
   requiredValidator,
   toolOptionDefinitions,
-  v2OptionDefinitions,
 } from './env'
+import {v2OptionDefinitions} from './v2/options'
 
 async function main(bucketNames: string[]): Promise<void> {
   if (!bucketNames.length) {

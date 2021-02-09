@@ -3,7 +3,6 @@ import {
   printCurrentOptions,
   option,
   parseOptions,
-  v2OptionDefinitions,
   toolOptionDefinitions,
 } from './env'
 import logger from './util/logger'
@@ -14,6 +13,7 @@ import {
 import {pairToExistingBuckets} from './util/pairRetentionPolicy'
 import {v1OptionDefinitions} from './v1/options'
 import {getRetentionPolicies, getUsers} from './v1/v1-api'
+import {v2OptionDefinitions} from './v2/options'
 import {
   createBucket,
   createDBRP,

@@ -7,9 +7,9 @@ import {
   OrgsAPI,
   RetentionRules,
 } from '@influxdata/influxdb-client-apis'
-import {v2Options} from '../env'
 import {RetentionPolicy} from '../types'
 import logger from '../util/logger'
+import {v2Options} from './options'
 
 function getInfluxDB(): InfluxDB {
   return new InfluxDB({url: v2Options.url, token: v2Options.token})

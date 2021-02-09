@@ -2,7 +2,7 @@ import {Bucket, DBRP} from '@influxdata/influxdb-client-apis'
 import {RetentionPolicy, RetentionPolicyToBucket} from '../types'
 
 export function getBucketName(rp: RetentionPolicy): string {
-  return rp.isDefault ? rp.db : `${rp.db}/${rp.rp}`
+  return `${rp.db}/${rp.rp}`
 }
 
 export function pairToExistingBuckets(

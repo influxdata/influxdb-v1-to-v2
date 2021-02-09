@@ -53,7 +53,7 @@ async function main(): Promise<void> {
         )
         logger.info(
           rpsToBucket.bucketName,
-          'bucket ${rpsToBucket.bucket?.id} created'
+          `bucket ${rpsToBucket.bucket?.id} created`
         )
       } catch (e) {
         logger.error(

@@ -13,6 +13,7 @@ export const v1Options = {
   url: 'http://localhost:8087',
   user: 'admin',
   password: 'changeit',
+  metaDumpFile: '',
 }
 
 /** Tool options */
@@ -77,6 +78,13 @@ export const v1OptionDefinitions = [
     'password',
     'V1_INFLUX_PASSWORD',
     'source password'
+  ),
+  option(
+    'v1-meta',
+    v1Options,
+    'metaDumpFile',
+    'V1_META_DUMP_FILE',
+    'file with v1 inputs to retrieve from'
   ),
 ]
 export const v2OptionDefinitions = [

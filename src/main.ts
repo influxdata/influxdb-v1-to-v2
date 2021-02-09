@@ -3,7 +3,6 @@ import {
   printCurrentOptions,
   option,
   parseOptions,
-  v1OptionDefinitions,
   v2OptionDefinitions,
   toolOptionDefinitions,
 } from './env'
@@ -13,6 +12,7 @@ import {
   pairGrantsToAuthorizations,
 } from './util/pairGrantsToAuthorizations'
 import {pairToExistingBuckets} from './util/pairRetentionPolicy'
+import {v1OptionDefinitions} from './v1/options'
 import {getRetentionPolicies, getUsers} from './v1/v1-api'
 import {
   createBucket,

@@ -1,5 +1,4 @@
 import fetch from 'node-fetch'
-import {v1Options} from '../env'
 import {URLSearchParams} from 'url'
 import {RetentionPolicy, User, V1Response, V1Result} from '../types'
 import parseRetentionPolicies from './parseRetentionPolicies'
@@ -7,6 +6,7 @@ import parseShowDatabases from './parseShowDatabases'
 import logger from '../util/logger'
 import parseShowUsers from './parseShowUsers'
 import parseShowGrants from './parseShowGrants'
+import {v1Options} from './options'
 
 async function v1Query(command: string): Promise<Array<V1Result>> {
   const headers =

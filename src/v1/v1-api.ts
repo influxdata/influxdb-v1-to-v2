@@ -9,9 +9,17 @@ import parseShowGrants from './parseShowGrants'
 import {v1Options} from './options'
 import {readFileSync} from 'fs'
 
+let cachedV1MetaFile: V1MetaFile | undefined = undefined
+let cachedMetaDumpFile = ''
 function v1MetaFile(): V1MetaFile | undefined {
   if (v1Options.metaDumpFile) {
-    return JSON.parse(readFileSync(v1Options.metaDumpFile, {encoding: 'utf8'}))
+    if (v1Options.metaDumpFile !== cachedMetaDumpFile) {
+      cachedV1MetaFile = JSON.parse(
+        readFileSync(v1Options.metaDumpFile, {encoding: 'utf8'})
+      )
+      cachedMetaDumpFile = v1Options.metaDumpFile
+    }
+    return cachedV1MetaFile
   }
 }
 async function v1Query(command: string): Promise<Array<V1Result>> {

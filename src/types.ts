@@ -22,6 +22,7 @@ export interface RetentionPolicy {
 export interface User {
   user: string
   isAdmin: boolean
+  hash?: string
   readDBs?: string[]
   writeDBs?: string[]
 }

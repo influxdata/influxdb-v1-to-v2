@@ -27,6 +27,10 @@ export interface User {
   writeDBs?: string[]
 }
 
+export interface V1MetaFile {
+  dbrps?: RetentionPolicy[]
+  users?: User[]
+}
 export interface RetentionPolicyToBucket {
   bucketName: string
   rp: RetentionPolicy

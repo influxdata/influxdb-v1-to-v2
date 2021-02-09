@@ -1,13 +1,19 @@
 import fetch from 'node-fetch'
 import {URLSearchParams} from 'url'
-import {RetentionPolicy, User, V1Response, V1Result} from '../types'
+import {RetentionPolicy, User, V1MetaFile, V1Response, V1Result} from '../types'
 import parseRetentionPolicies from './parseRetentionPolicies'
 import parseShowDatabases from './parseShowDatabases'
 import logger from '../util/logger'
 import parseShowUsers from './parseShowUsers'
 import parseShowGrants from './parseShowGrants'
 import {v1Options} from './options'
+import {readFileSync} from 'fs'
 
+function v1MetaFile(): V1MetaFile | undefined {
+  if (v1Options.metaDumpFile) {
+    return JSON.parse(readFileSync(v1Options.metaDumpFile, {encoding: 'utf8'}))
+  }
+}
 async function v1Query(command: string): Promise<Array<V1Result>> {
   const headers =
     v1Options.user && v1Options.password
@@ -48,6 +54,10 @@ async function v1Query(command: string): Promise<Array<V1Result>> {
 }
 
 export async function getRetentionPolicies(): Promise<RetentionPolicy[]> {
+  const v1File = v1MetaFile()
+  if (v1File) {
+    return v1File.dbrps || []
+  }
   const databases = parseShowDatabases(await v1Query('SHOW DATABASES'))
   const rps: RetentionPolicy[] = []
   for (const db of databases) {
@@ -69,6 +79,10 @@ export async function getRetentionPolicies(): Promise<RetentionPolicy[]> {
   return rps
 }
 export async function getUsers(): Promise<User[]> {
+  const v1File = v1MetaFile()
+  if (v1File) {
+    return v1File.users || []
+  }
   const users = parseShowUsers(await v1Query('SHOW USERS'))
   for (const user of users) {
     try {

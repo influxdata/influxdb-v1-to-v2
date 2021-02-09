@@ -30,7 +30,7 @@ import {
 const localOptions = {
   outUsersFile: '',
   outMappingFile: '',
-  outV1DumpMeta: '',
+  outV1Meta: '',
 }
 
 async function main(): Promise<void> {
@@ -175,10 +175,10 @@ async function main(): Promise<void> {
     })
     logger.info(localOptions.outUsersFile, 'written')
   }
-  if (localOptions.outV1DumpMeta) {
-    logger.info('--- Write dump of v1 inputs ---')
+  if (localOptions.outV1Meta) {
+    logger.info('--- Write v1 inputs ---')
     writeFileSync(
-      localOptions.outV1DumpMeta,
+      localOptions.outV1Meta,
       JSON.stringify(
         {
           users: grantsToAuthorizations
@@ -193,7 +193,7 @@ async function main(): Promise<void> {
         encoding: 'utf-8',
       }
     )
-    logger.info(localOptions.outV1DumpMeta, 'written')
+    logger.info(localOptions.outV1Meta, 'written')
   }
 }
 
@@ -217,10 +217,10 @@ const options = {
       'write result v1 to v2 mapping to a file'
     ),
     option(
-      'out-v1-dump-meta',
+      'out-v1-meta',
       localOptions,
-      'outV1DumpMeta',
-      'OUT_V1_DUMP_META',
+      'outV1Meta',
+      'OUT_V1_META',
       'write v1 inputs to a file'
     ),
   ],

@@ -1,7 +1,6 @@
 import {writeFileSync} from 'fs'
 import {
   printCurrentOptions,
-  toolOptions,
   option,
   parseOptions,
   v1OptionDefinitions,
@@ -184,14 +183,14 @@ const options = {
     ...toolOptionDefinitions,
     option(
       'out-users',
-      toolOptions,
+      localOptions,
       'outUsersFile',
       'USERS_FILE',
       'write v1 users to a file'
     ),
     option(
       'out-mapping',
-      toolOptions,
+      localOptions,
       'outMappingFile',
       'OUT_MAPPING',
       'write result v1 to v2 mapping to a file'

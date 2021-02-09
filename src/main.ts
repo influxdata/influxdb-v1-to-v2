@@ -11,13 +11,14 @@ import {
   createActualV1Authorization,
   pairGrantsToAuthorizations,
 } from './util/pairGrantsToAuthorizations'
-import {pairToExistingBuckets} from './util/pairRetentionPolicy'
+import {getBucketName, pairToExistingBuckets} from './util/pairRetentionPolicy'
 import {v1OptionDefinitions} from './v1/options'
 import {getRetentionPolicies, getUsers} from './v1/v1-api'
 import {v2OptionDefinitions} from './v2/options'
 import {
   createBucket,
   createDBRP,
+  deleteBucket,
   getBuckets,
   getDBRPs,
   getOrgID,
@@ -32,9 +33,10 @@ const localOptions = {
   outUsersFile: '',
   outMappingFile: '',
   outV1Meta: '',
+  delete: false,
 }
 
-async function main(): Promise<void> {
+async function create(): Promise<void> {
   logger.info('--- Read v1 retention policies ---')
   const rps = await getRetentionPolicies()
   logger.info('--- Read v2 buckets ---')
@@ -198,11 +200,71 @@ async function main(): Promise<void> {
   }
 }
 
+async function remove(): Promise<void> {
+  logger.info('--- Read v1 retention policies ---')
+  const dbrps = await getRetentionPolicies()
+  logger.info('--- Read v2 buckets ---')
+  const buckets = await getBuckets()
+  logger.info('--- Delete v2 buckets ---')
+  const bucketNameToID = buckets.reduce((acc, val) => {
+    acc[val.name] = val.id as string
+    return acc
+  }, {} as Record<string, string>)
+  for (const dbrp of dbrps) {
+    const bucketName = getBucketName(dbrp)
+    const id = bucketNameToID[bucketName]
+    if (!id) {
+      logger.info(bucketName, `skipped, bucket does not exist`)
+      continue
+    }
+    try {
+      await deleteBucket(id)
+      logger.info(bucketName, `bucket ${id} deleted`)
+    } catch (e) {
+      logger.error('v2api', bucketName, `bucket ${id} cannot be deleted:`, e)
+    }
+  }
+  logger.info('--- Read v2 authorizations for v1 users ---')
+  const v1Authorizations = await getV1Authorizations()
+  logger.info('--- Read v1 users ---')
+  const users = await getUsers()
+  const userToAuthorizationID = v1Authorizations.reduce((acc, val) => {
+    acc[val.token] = val.id as string
+    return acc
+  }, {} as Record<string, string>)
+  logger.info('--- Delete v2 authorizations for v1 users ---')
+  for (const user of users) {
+    if (user.isAdmin) {
+      logger.info(user.user, 'user is ignored because it is an administrator')
+      continue
+    }
+    const name = user.user
+    const id = userToAuthorizationID[name]
+    if (!id) {
+      logger.info(name, `skipped, authorization does not exist`)
+      continue
+    }
+    try {
+      await deleteV1Authorization(id)
+      logger.info(name, `authorization ${id} deleted`)
+    } catch (e) {
+      logger.error('v2api', name, `authorization ${id} cannot be deleted:`, e)
+    }
+  }
+}
+
 const options = {
   opts: [
     ...v1OptionDefinitions,
     ...v2OptionDefinitions,
     ...toolOptionDefinitions,
+    option(
+      'delete',
+      localOptions,
+      'delete',
+      'DO_DELETE',
+      `don't create but delete matching v2 buckets and authorizations`
+    ),
     option(
       'out-users',
       localOptions,
@@ -230,7 +292,7 @@ parseOptions(options)
 printCurrentOptions(options)
 // continue unless environment printout is requested
 if (String(process.argv.slice(2).shift()).indexOf('env') === -1) {
-  main()
+  ;(localOptions.delete ? remove() : create())
     .then(() => {
       logger.info('')
       logger.info('Finished SUCCESS')

@@ -90,7 +90,7 @@ export async function createDBRP(
       database: rp.db,
       // eslint-disable-next-line @typescript-eslint/camelcase
       retention_policy: rp.rp,
-      default: rp.isDefault,
+      default: rp.default,
       orgID: orgID,
     },
   })

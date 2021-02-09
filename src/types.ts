@@ -16,7 +16,7 @@ export interface RetentionPolicy {
   db: string
   rp: string
   durationSeconds: number
-  isDefault: boolean
+  default: boolean
 }
 
 export interface User {

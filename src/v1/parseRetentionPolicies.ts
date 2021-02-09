@@ -26,7 +26,7 @@ export default function parseShowRetentionPolicies(
       db,
       rp: arr[nameIndex] as string,
       durationSeconds: parseV1Duration(arr[durationIndex] as string),
-      isDefault: arr[defaultIndex] === true,
+      default: arr[defaultIndex] === true,
     })
   })
   rps.sort((a, b) => a.rp.localeCompare(b.rp))

@@ -4,6 +4,7 @@ import {
   option,
   parseOptions,
   toolOptionDefinitions,
+  booleanOptionParser,
 } from './env'
 import {V1MetaFile} from './types'
 import logger from './util/logger'
@@ -263,7 +264,9 @@ const options = {
       localOptions,
       'delete',
       'DO_DELETE',
-      `don't create but delete matching v2 buckets and authorizations`
+      `don't create but delete buckets and authorizations`,
+      undefined,
+      booleanOptionParser
     ),
     option(
       'out-users',

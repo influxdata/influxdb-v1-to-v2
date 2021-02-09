@@ -4,6 +4,7 @@ import {
   option,
   parseOptions,
   printCurrentOptions,
+  requiredValidator,
   toolOptionDefinitions,
   v2OptionDefinitions,
 } from './env'
@@ -70,7 +71,7 @@ const options = {
       'usersFile',
       'USERS_FILE',
       'path to users file',
-      true
+      requiredValidator
     ),
     option(
       'password',

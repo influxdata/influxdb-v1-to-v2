@@ -26,7 +26,7 @@ export interface Option {
   envKey: string
   help: string
   convertValue?: (v: unknown) => unknown
-  required?: boolean
+  validator?: (option: Option, argv: Record<string, unknown>) => boolean
 }
 const identityFn = (v: unknown): unknown => v
 export const booleanOptionParser = (v: unknown): unknown => !!v
@@ -45,34 +45,64 @@ export function option(
   key: string,
   envKey: string,
   help: string,
-  required = false,
+  validator?: (option: Option, argv: Record<string, unknown>) => boolean,
   convertValue: (v: unknown) => unknown = identityFn
 ): Option {
-  return {option, target, key, envKey, help, convertValue, required}
+  return {option, target, key, envKey, help, convertValue, validator}
+}
+
+export function requiredValidator(option: Option): boolean {
+  const val = option.target[option.key]
+  if (
+    val === null ||
+    val === undefined ||
+    ((typeof val === 'string' || Array.isArray(val)) && !val.length)
+  ) {
+    logger.error(
+      `Missing required ${
+        option.option === '_' ? 'arguments' : 'option --' + option.option
+      }`
+    )
+    return false
+  }
+  return true
 }
 
 export const v1OptionDefinitions = [
-  option('v1-url', v1Options, 'url', 'V1_INFLUX_URL', 'source base URL', true),
-  option('v1-user', v1Options, 'user', 'V1_INFLUX_USER', 'source user', true),
+  option('v1-url', v1Options, 'url', 'V1_INFLUX_URL', 'source base URL'),
+  option('v1-user', v1Options, 'user', 'V1_INFLUX_USER', 'source user'),
   option(
     'v1-password',
     v1Options,
     'password',
     'V1_INFLUX_PASSWORD',
-    'source password',
-    true
+    'source password'
   ),
 ]
 export const v2OptionDefinitions = [
-  option('v2-url', v2Options, 'url', 'INFLUX_URL', 'target base url', true),
-  option('v2-token', v2Options, 'token', 'INFLUX_TOKEN', 'target token', true),
+  option(
+    'v2-url',
+    v2Options,
+    'url',
+    'INFLUX_URL',
+    'target base url',
+    requiredValidator
+  ),
+  option(
+    'v2-token',
+    v2Options,
+    'token',
+    'INFLUX_TOKEN',
+    'target token',
+    requiredValidator
+  ),
   option(
     'v2-org',
     v2Options,
     'org',
     'INFLUX_ORG',
     'target organization name',
-    true
+    requiredValidator
   ),
 ]
 export const toolOptionDefinitions = [
@@ -82,7 +112,7 @@ export const toolOptionDefinitions = [
     'trace',
     'TRACE',
     'turns on trace logging',
-    false,
+    undefined,
     booleanOptionParser
   ),
 ]
@@ -106,7 +136,7 @@ export function help(cmdLine: CmdLine): void {
     }
     logger.info(
       ` --${opt.option}`.padEnd(15),
-      `${opt.help} (${opt.required ? 'required, ' : ''}${
+      `${opt.help} (${opt.validator === requiredValidator ? 'required, ' : ''}${
         opt.envKey
       }=${currentValue})`
     )
@@ -114,9 +144,9 @@ export function help(cmdLine: CmdLine): void {
   if (args) {
     logger.info('Arguments:')
     logger.info(
-      ` ${args.help} (${args.required ? 'required, ' : ''}${args.envKey}=${
-        args.target[args.key]
-      })`
+      ` ${args.help} (${
+        args.validator === requiredValidator ? 'required, ' : ''
+      }${args.envKey}=${args.target[args.key]})`
     )
   }
 }
@@ -166,23 +196,11 @@ export function parseOptions(cmdLine: CmdLine): void {
       option.target[option.key] = (option.convertValue || identityFn)(val)
     }
   }
-  // check required arguments
+  // run validators
   for (const option of cmdLine.opts) {
-    if (option.required) {
-      const val = option.target[option.key]
-      if (
-        val === null ||
-        val === undefined ||
-        ((typeof val === 'string' || Array.isArray(val)) && !val.length)
-      ) {
-        logger.error(
-          `Missing required ${
-            option.option === '_' ? 'arguments' : 'option --' + option.option
-          }`
-        )
-        help(cmdLine)
-        process.exit(1)
-      }
+    if (option.validator && !option.validator(option, argv)) {
+      help(cmdLine)
+      process.exit(1)
     }
   }
 }

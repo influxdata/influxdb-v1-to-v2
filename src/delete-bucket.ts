@@ -6,6 +6,7 @@ import {
   option,
   parseOptions,
   printCurrentOptions,
+  requiredValidator,
   toolOptionDefinitions,
   v2OptionDefinitions,
 } from './env'
@@ -50,7 +51,7 @@ const options = {
       'buckets',
       'INFLUX_BUCKETS',
       'bucket names',
-      true,
+      requiredValidator,
       listOptionParser
     ),
   ],

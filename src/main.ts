@@ -5,6 +5,7 @@ import {
   parseOptions,
   toolOptionDefinitions,
 } from './env'
+import {V1MetaFile} from './types'
 import logger from './util/logger'
 import {
   createActualV1Authorization,
@@ -185,7 +186,7 @@ async function main(): Promise<void> {
             .filter(x => !x.user.isAdmin)
             .map(x => x.user),
           dbrps: rps,
-        },
+        } as V1MetaFile,
         null,
         2
       ),

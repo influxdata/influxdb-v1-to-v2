@@ -68,7 +68,7 @@ export const toolOptionDefinitions = [
 
 export interface CmdLine {
   description: string
-  usage: string
+  usage?: string
   opts: Option[]
 }
 
@@ -141,7 +141,9 @@ export function parseOptions(cmdLine: CmdLine): void {
       continue // ignore minimist builtins
     }
     if (!option) {
-      logger.error('Unrecognized option:', key, argv[key])
+      if (key !== 'h' && key !== 'help') {
+        logger.error('Unrecognized option:', key, argv[key])
+      }
       help(cmdLine)
       process.exit(1)
     }

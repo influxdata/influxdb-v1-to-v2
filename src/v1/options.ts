@@ -14,13 +14,16 @@ function v1OptionsValidator(): boolean {
     logger.info(`Using ${v1Options.metaDumpFile} to provide v1 inputs`)
     return true
   }
-  for (const option of ['url', 'user', 'password']) {
-    if (!(v1Options as Record<string, unknown>)[option]) {
-      logger.error(`Missing required option --v1-${option}`)
-      return false
-    }
+  const requiredPresent = ['url', 'user', 'password'].every(
+    option => (v1Options as Record<string, unknown>)[option]
+  )
+  if (requiredPresent) {
+    return true
   }
-  return true
+  logger.error(
+    `Either --v1-url,--v1-user,--v1-password or --v1-meta is required!`
+  )
+  return false
 }
 
 export const v1OptionDefinitions = [

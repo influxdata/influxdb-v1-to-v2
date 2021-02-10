@@ -2,9 +2,9 @@ import {option, requiredValidator} from '../env'
 
 /** InfluxDB v2 options */
 export const v2Options = {
-  url: 'http://localhost:9999',
-  token: 'my-token',
-  org: 'my-org',
+  url: '',
+  token: '',
+  org: '',
 }
 
 export const v2OptionDefinitions = [

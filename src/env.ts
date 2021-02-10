@@ -67,8 +67,8 @@ export const toolOptionDefinitions = [
 ]
 
 export interface CmdLine {
-  description?: string
-  usage?: string
+  description: string
+  usage: string
   opts: Option[]
 }
 

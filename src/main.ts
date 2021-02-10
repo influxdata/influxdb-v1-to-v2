@@ -255,6 +255,9 @@ async function remove(): Promise<void> {
 }
 
 const cmdLine = {
+  description:
+    'Influxdb-v1-to-v2 migrates InfluxDB v1 database and user metadata to InfluxDB v2.',
+  usage: 'influxdb-v1-to-v2 [options]',
   opts: [
     ...v1OptionDefinitions,
     ...v2OptionDefinitions,

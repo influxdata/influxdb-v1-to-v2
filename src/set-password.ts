@@ -62,6 +62,9 @@ async function main(): Promise<void> {
 }
 
 const cmdLine = {
+  description:
+    'Set-password sets user passwords in InfluxDB v2 authorizations.',
+  usage: 'set-password [options]',
   opts: [
     ...v2OptionDefinitions,
     ...toolOptionDefinitions,

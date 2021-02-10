@@ -42,6 +42,8 @@ const deleteOptions = {
   buckets: [],
 }
 const cmdLine = {
+  description: 'Delete-bucket deletes one or more buckets from InfluxDB v2.',
+  usage: 'delete-bucket [options] [arguments...]',
   opts: [
     ...v2OptionDefinitions,
     ...toolOptionDefinitions,

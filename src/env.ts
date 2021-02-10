@@ -67,10 +67,15 @@ export const toolOptionDefinitions = [
 ]
 
 export interface CmdLine {
+  description?: string
+  usage?: string
   opts: Option[]
 }
 
 export function help(cmdLine: CmdLine): void {
+  logger.info(cmdLine.description)
+  logger.info('Usage:')
+  logger.info(` ${cmdLine.usage}`)
   logger.info('Options:')
   let args: Option | undefined = undefined
   for (const opt of cmdLine.opts) {

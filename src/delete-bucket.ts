@@ -41,7 +41,7 @@ async function main(bucketNames: string[]): Promise<void> {
 const deleteOptions = {
   buckets: [],
 }
-const options = {
+const cmdLine = {
   opts: [
     ...v2OptionDefinitions,
     ...toolOptionDefinitions,
@@ -56,8 +56,8 @@ const options = {
     ),
   ],
 }
-parseOptions(options)
-printCurrentOptions(options)
+parseOptions(cmdLine)
+printCurrentOptions(cmdLine)
 
 main(deleteOptions.buckets)
   .then(() => {

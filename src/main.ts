@@ -254,7 +254,7 @@ async function remove(): Promise<void> {
   }
 }
 
-const options = {
+const cmdLine = {
   opts: [
     ...v1OptionDefinitions,
     ...v2OptionDefinitions,
@@ -291,8 +291,8 @@ const options = {
     ),
   ],
 }
-parseOptions(options)
-printCurrentOptions(options)
+parseOptions(cmdLine)
+printCurrentOptions(cmdLine)
 // continue unless environment printout is requested
 if (String(process.argv.slice(2).shift()).indexOf('env') === -1) {
   ;(localOptions.delete ? remove() : create())

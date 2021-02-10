@@ -61,7 +61,7 @@ async function main(): Promise<void> {
   }
 }
 
-const options = {
+const cmdLine = {
   opts: [
     ...v2OptionDefinitions,
     ...toolOptionDefinitions,
@@ -82,8 +82,8 @@ const options = {
     ),
   ],
 }
-parseOptions(options)
-printCurrentOptions(options)
+parseOptions(cmdLine)
+printCurrentOptions(cmdLine)
 
 main()
   .then(() => {

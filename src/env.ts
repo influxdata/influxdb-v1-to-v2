@@ -146,10 +146,14 @@ export function parseOptions(cmdLine: CmdLine): void {
     }
   }
   // run validators
+  let invalid = false
   for (const option of cmdLine.opts) {
     if (option.validator && !option.validator(option, argv)) {
-      help(cmdLine)
-      process.exit(1)
+      invalid = true
     }
+  }
+  if (invalid) {
+    help(cmdLine)
+    process.exit(1)
   }
 }

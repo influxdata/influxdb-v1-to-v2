@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "lint": "eslint 'src/**/*.ts' 'src/*.ts'",
-    "main": "ts-node src/main.ts",
+    "influxdb-v1-to-v2": "ts-node src/influxdb-v1-to-v2.ts",
     "delete-bucket": "ts-node src/delete-bucket.ts",
     "set-password": "ts-node src/set-password.ts"
   },

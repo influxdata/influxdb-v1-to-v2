@@ -21,7 +21,7 @@ function v1OptionsValidator(): boolean {
     return true
   }
   logger.error(
-    `Either --v1-url,--v1-user,--v1-password or --v1-meta is required!`
+    `Either --v1-url,--v1-user,--v1-password or --v1-meta is required`
   )
   return false
 }

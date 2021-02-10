@@ -3,9 +3,9 @@ import logger from '../util/logger'
 
 /** InfluxDB v1 options */
 export const v1Options = {
-  url: 'http://localhost:8087',
-  user: 'admin',
-  password: 'changeit',
+  url: '',
+  user: '',
+  password: '',
   metaDumpFile: '',
 }
 

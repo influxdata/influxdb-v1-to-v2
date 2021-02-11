@@ -18,10 +18,10 @@ export default function parseShowUsers(results: V1Result[]): User[] {
   const retVal: User[] = []
   series.values.forEach((arr: V1ValueType[]) => {
     retVal.push({
-      user: arr[userIndex] as string,
+      name: arr[userIndex] as string,
       isAdmin: arr[adminIndex] === true,
     })
   })
-  retVal.sort((a, b) => a.user.localeCompare(b.user))
+  retVal.sort((a, b) => a.name.localeCompare(b.name))
   return retVal
 }

@@ -108,7 +108,7 @@ async function create(): Promise<void> {
   for (const pair of grantsToAuthorizations) {
     if (pair.user.isAdmin) {
       logger.info(
-        pair.user.user,
+        pair.user.name,
         'user is ignored because it is an administrator'
       )
       continue
@@ -118,7 +118,7 @@ async function create(): Promise<void> {
       (!pair.user.writeDBs || !pair.user.writeDBs.length)
     ) {
       logger.info(
-        pair.user.user,
+        pair.user.name,
         'user is ignored because of no READ/WRITE to any database'
       )
       continue
@@ -129,7 +129,7 @@ async function create(): Promise<void> {
       userWriteBuckets,
     } = createActualV1Authorization(pair, rpsToBuckets, await getOrgID())
     if (v1Authorization) {
-      logger.info(pair.user.user, `user requires a new authorization in v2`)
+      logger.info(pair.user.name, `user requires a new authorization in v2`)
       if (pair.v1Authorization?.id) {
         logger.info(` delete existing authorization ${pair.v1Authorization.id}`)
         await deleteV1Authorization(pair.v1Authorization.id)
@@ -138,7 +138,7 @@ async function create(): Promise<void> {
       logger.info(` authorization ${pair.v1Authorization?.id} created`)
     } else {
       logger.info(
-        pair.user.user,
+        pair.user.name,
         `user has already a matching authorization ${pair?.v1Authorization?.id}`
       )
     }
@@ -170,7 +170,7 @@ async function create(): Promise<void> {
     const toWrite = grantsToAuthorizations
       .filter(x => !x.user.isAdmin)
       .map(x => ({
-        name: x.user.user,
+        name: x.user.name,
         password: '',
         authorizationId: x.v1Authorization?.id || '',
       }))
@@ -236,10 +236,10 @@ async function remove(): Promise<void> {
   logger.info('--- Delete v2 authorizations for v1 users ---')
   for (const user of users) {
     if (user.isAdmin) {
-      logger.info(user.user, 'user is ignored because it is an administrator')
+      logger.info(user.name, 'user is ignored because it is an administrator')
       continue
     }
-    const name = user.user
+    const name = user.name
     const id = userToAuthorizationID[name]
     if (!id) {
       logger.info(name, `skipped, authorization does not exist`)

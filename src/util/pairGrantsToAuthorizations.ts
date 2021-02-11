@@ -22,7 +22,7 @@ export function pairGrantsToAuthorizations(
     {}
   )
   return users.map((user: User) => {
-    const v1Authorization = v1AuthMap[user.user]
+    const v1Authorization = v1AuthMap[user.name]
     return {
       user,
       v1Authorization,
@@ -78,20 +78,6 @@ export function compareGrants(
   const authReadBuckets = getPermittedBuckets('read', pair.v1Authorization)
   const userWriteBuckets = toBucketIds(pair.user.writeDBs)
   const authWriteBuckets = getPermittedBuckets('write', pair.v1Authorization)
-  // logger.trace(
-  //   pair.user.user,
-  //   'v1 read:',
-  //   userReadBuckets,
-  //   'v1 write:',
-  //   userWriteBuckets
-  // )
-  // logger.trace(
-  //   pair.user.user,
-  //   'v2 read:',
-  //   authReadBuckets,
-  //   'v2 write:',
-  //   authWriteBuckets
-  // )
   if (
     arrayEquals(userReadBuckets, authReadBuckets) &&
     arrayEquals(userWriteBuckets, authWriteBuckets)
@@ -136,8 +122,8 @@ export function createActualV1Authorization(
     v1Authorization: {
       orgID,
       status: 'active',
-      token: pair.user.user,
-      description: `migrated from v1 ${pair.user.user}`,
+      token: pair.user.name,
+      description: `migrated from v1 ${pair.user.name}`,
       permissions,
     },
     userReadBuckets,

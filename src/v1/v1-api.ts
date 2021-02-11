@@ -94,11 +94,11 @@ export async function getUsers(): Promise<User[]> {
   const users = parseShowUsers(await v1Query('SHOW USERS'))
   for (const user of users) {
     try {
-      parseShowGrants(user, await v1Query(`SHOW GRANTS FOR "${user.user}"`))
+      parseShowGrants(user, await v1Query(`SHOW GRANTS FOR "${user.name}"`))
     } catch (e) {
       logger.warn(
         'v1api',
-        `Ignoring grants for user ${user.user}, they cannot be retrieved!`,
+        `Ignoring grants for user ${user.name}, they cannot be retrieved!`,
         e
       )
     }

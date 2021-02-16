@@ -14,6 +14,5 @@ export default function parseShowDatabases(results: V1Result[]): string[] {
     .map((s: V1ValueType[]) => {
       return s[0] as string
     })
-    .filter((s: string) => s != '_internal')
     .sort()
 }

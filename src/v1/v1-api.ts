@@ -64,9 +64,14 @@ async function v1Query(command: string): Promise<Array<V1Result>> {
 export async function getRetentionPolicies(): Promise<RetentionPolicy[]> {
   const v1File = v1MetaFile()
   if (v1File) {
-    return v1File.dbrps || []
+    return (v1File.dbrps || []).filter(
+      (x: RetentionPolicy) => x.db !== '_internal'
+    )
   }
-  const databases = parseShowDatabases(await v1Query('SHOW DATABASES'))
+  const databases = parseShowDatabases(await v1Query('SHOW DATABASES')).filter(
+    (s: string) => s != '_internal'
+  )
+
   const rps: RetentionPolicy[] = []
   for (const db of databases) {
     try {

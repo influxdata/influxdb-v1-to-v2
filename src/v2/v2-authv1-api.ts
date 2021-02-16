@@ -67,12 +67,13 @@ export async function postV1Authorization(
 
 export async function postPassword(
   authorizationId: string,
-  password: string
+  password: string,
+  hashed?: boolean
 ): Promise<void> {
   await v2Request(
     'POST',
     [prefixAuthorization, authorizationId, 'password'].join('/'),
     undefined,
-    JSON.stringify({password})
+    JSON.stringify({password, hashed})
   )
 }

@@ -27,6 +27,7 @@ import {
 import {
   deleteV1Authorization,
   getV1Authorizations,
+  postPassword,
   postV1Authorization,
 } from './v2/v2-authv1-api'
 
@@ -141,6 +142,14 @@ async function create(): Promise<void> {
         pair.user.name,
         `user has already a matching authorization ${pair?.v1Authorization?.id}`
       )
+    }
+    if (pair.user.hash) {
+      await postPassword(
+        pair?.v1Authorization?.id as string,
+        pair.user.hash,
+        true
+      )
+      logger.info(` password hash updated`)
     }
     if (userReadBuckets && userReadBuckets.length) {
       logger.info(` read: ${userReadBuckets}`)

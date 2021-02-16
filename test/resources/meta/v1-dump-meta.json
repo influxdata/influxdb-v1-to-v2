@@ -1,0 +1,66 @@
+{
+  "dbrps": [
+    {
+      "db": "telegraf",
+      "default": true,
+      "durationSeconds": 0,
+      "rp": "autogen"
+    },
+    {
+      "db": "_internal",
+      "default": true,
+      "durationSeconds": 604800,
+      "rp": "monitor"
+    },
+    {
+      "db": "my-db",
+      "default": true,
+      "durationSeconds": 0,
+      "rp": "autogen"
+    },
+    {
+      "db": "noperm",
+      "default": true,
+      "durationSeconds": 0,
+      "rp": "autogen"
+    }
+  ],
+  "users": [
+    {
+      "hash": "$2a$10$DFZTcm.hgUPcHaGE0D0M6uuXs3nIG4YekhpMMVV6Ry/cTS.rpdc7.",
+      "isAdmin": true,
+      "name": "admin",
+      "readDBs": [],
+      "writeDBs": []
+    },
+    {
+      "hash": "$2a$10$QXYarFvAitpevbIYXb9I5ekXMnavj.Z.WaV5lh5D9oqqxP.2tLRpa",
+      "isAdmin": false,
+      "name": "telegraf",
+      "readDBs": [
+        "telegraf"
+      ],
+      "writeDBs": [
+        "telegraf"
+      ]
+    },
+    {
+      "hash": "$2a$10$mvlq2VcXmznGyhEIrDu0S.z6GDfwvlIyv5yH7rkGuGrYClXobLo3y",
+      "isAdmin": false,
+      "name": "write",
+      "readDBs": [],
+      "writeDBs": [
+        "telegraf"
+      ]
+    },
+    {
+      "hash": "$2a$10$zsof0h1Jh4v0a5l0oOT49uJcTDkrd2no/zjeV33McUgE9btBrgXFy",
+      "isAdmin": false,
+      "name": "read",
+      "readDBs": [
+        "telegraf"
+      ],
+      "writeDBs": []
+    }
+  ]
+}

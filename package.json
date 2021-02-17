@@ -5,10 +5,14 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
+    "clean": "rimraf build dist" ,
     "lint": "eslint 'src/**/*.ts' 'src/*.ts'",
     "influxdb-v1-to-v2": "ts-node src/influxdb-v1-to-v2.ts",
     "delete-bucket": "ts-node src/delete-bucket.ts",
-    "set-password": "ts-node src/set-password.ts"
+    "set-password": "ts-node src/set-password.ts",
+    "dist-linux": "pkg --target linux --out-path ./dist/linux build/influxdb-v1-to-v2.js",
+    "dist-mac": "pkg --target macos --out-path ./dist/macos build/influxdb-v1-to-v2.js",
+    "dist-win": "pkg --target win --out-path ./dist/linux build/influxdb-v1-to-v2.js"
   },
   "dependencies": {
     "@influxdata/influxdb-client": "^1.10.0",
@@ -26,7 +30,9 @@
     "eslint": "^6.7.1",
     "eslint-config-prettier": "^6.7.0",
     "eslint-plugin-prettier": "^3.1.1",
+    "pkg": "^4.4.9",
     "prettier": "^1.19.1",
+    "rimraf": "^3.0.2",
     "ts-node": "^8.5.4",
     "typescript": "^3.7.4"
   }

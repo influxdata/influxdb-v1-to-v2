@@ -11,8 +11,8 @@ __Create v2 buckets out of v1 databases, maps v1 users to v2 authorizations__
 1.  `yarn influxdb-v1-to-v2 --help` shows help with default and required options, run `yarn influxdb-v1-to-v2` with required parameters specified either in environment variables or in command-line options
 1.  observe console to see that
     - buckets are created for each database/retention policy pair
-    - DBRP mapping are created in v2 to map v1 db/rp pair to a v2 bucket, this mapping is required for v1 queries/writes to work properly
-    - v1-authorizations are created in v2 to map user grants (excluding admin users) to the created buckets
+    - DBRP mappings are created in v2 to map v1 db/rp pairs to v2 buckets; this mapping is required for v1 API queries/writes to work properly
+    - v1 authorizations are created in v2 and maps v1 user grants (excluding admin users) to created v2 buckets
     - user password cannot be migrated, use `--out-users` option to create file that you can later use to setup user passwords with
       `set-passwords` utility
 

@@ -48,6 +48,6 @@ export const v1OptionDefinitions = [
     v1Options,
     'metaDumpFile',
     'V1_META_DUMP_FILE',
-    'file with v1 inputs to retrieve from'
+    'file with v1 inputs as an alternative to --v1-url'
   ),
 ]

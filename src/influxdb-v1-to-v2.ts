@@ -6,7 +6,7 @@ import {
   toolOptionDefinitions,
   booleanOptionParser,
 } from './env'
-import {V1MetaFile} from './types'
+import {UserToV1Authorization, V1MetaFile} from './types'
 import logger from './util/logger'
 import {
   createActualV1Authorization,
@@ -36,6 +36,7 @@ const localOptions = {
   outMappingFile: '',
   outV1Meta: '',
   delete: false,
+  withUsers: false,
 }
 
 async function create(): Promise<void> {
@@ -97,65 +98,85 @@ async function create(): Promise<void> {
       }
     }
   }
-  logger.info('--- Read v1 users ---')
-  const users = await getUsers()
-  logger.info('--- Read v2 authorizations for v1 users ---')
-  const v1Authorizations = await getV1Authorizations()
-  logger.info('--- Create v2 authorizations for v1 users ---')
-  const grantsToAuthorizations = pairGrantsToAuthorizations(
-    users,
-    v1Authorizations
-  )
-  for (const pair of grantsToAuthorizations) {
-    if (pair.user.isAdmin) {
-      logger.info(
-        pair.user.name,
-        'user is ignored because it is an administrator'
-      )
-      continue
-    }
-    if (
-      (!pair.user.readDBs || !pair.user.readDBs.length) &&
-      (!pair.user.writeDBs || !pair.user.writeDBs.length)
-    ) {
-      logger.info(
-        pair.user.name,
-        'user is ignored because of no READ/WRITE to any database'
-      )
-      continue
-    }
-    const {
-      v1Authorization,
-      userReadBuckets,
-      userWriteBuckets,
-    } = createActualV1Authorization(pair, rpsToBuckets, await getOrgID())
-    if (v1Authorization) {
-      logger.info(pair.user.name, `user requires a new authorization in v2`)
-      if (pair.v1Authorization?.id) {
-        logger.info(` delete existing authorization ${pair.v1Authorization.id}`)
-        await deleteV1Authorization(pair.v1Authorization.id)
+  let grantsToAuthorizations: UserToV1Authorization[] = []
+  if (localOptions.withUsers) {
+    logger.info('--- Read v1 users ---')
+    const users = await getUsers()
+    logger.info('--- Read v2 authorizations for v1 users ---')
+    const v1Authorizations = await getV1Authorizations()
+    logger.info('--- Create v2 authorizations for v1 users ---')
+    grantsToAuthorizations = pairGrantsToAuthorizations(users, v1Authorizations)
+    for (const pair of grantsToAuthorizations) {
+      if (pair.user.isAdmin) {
+        logger.info(
+          pair.user.name,
+          'user is ignored because it is an administrator'
+        )
+        continue
       }
-      pair.v1Authorization = await postV1Authorization(v1Authorization)
-      logger.info(` authorization ${pair.v1Authorization?.id} created`)
-    } else {
-      logger.info(
-        pair.user.name,
-        `user has already a matching authorization ${pair?.v1Authorization?.id}`
+      if (
+        (!pair.user.readDBs || !pair.user.readDBs.length) &&
+        (!pair.user.writeDBs || !pair.user.writeDBs.length)
+      ) {
+        logger.info(
+          pair.user.name,
+          'user is ignored because of no READ/WRITE to any database'
+        )
+        continue
+      }
+      const {
+        v1Authorization,
+        userReadBuckets,
+        userWriteBuckets,
+      } = createActualV1Authorization(pair, rpsToBuckets, await getOrgID())
+      if (v1Authorization) {
+        logger.info(pair.user.name, `user requires a new authorization in v2`)
+        if (pair.v1Authorization?.id) {
+          logger.info(
+            ` delete existing authorization ${pair.v1Authorization.id}`
+          )
+          await deleteV1Authorization(pair.v1Authorization.id)
+        }
+        pair.v1Authorization = await postV1Authorization(v1Authorization)
+        logger.info(` authorization ${pair.v1Authorization?.id} created`)
+      } else {
+        logger.info(
+          pair.user.name,
+          `user has already a matching authorization ${pair?.v1Authorization?.id}`
+        )
+      }
+      if (pair.user.hash) {
+        await postPassword(
+          pair?.v1Authorization?.id as string,
+          pair.user.hash,
+          true
+        )
+        logger.info(` password hash updated`)
+      }
+      if (userReadBuckets && userReadBuckets.length) {
+        logger.info(` read: ${userReadBuckets}`)
+      }
+      if (userWriteBuckets && userWriteBuckets.length) {
+        logger.info(` write: ${userWriteBuckets}`)
+      }
+    }
+    if (localOptions.outUsersFile) {
+      logger.info('--- Write users file ---')
+      const toWrite = grantsToAuthorizations
+        .filter(x => !x.user.isAdmin)
+        .map(x => ({
+          name: x.user.name,
+          password: '',
+          authorizationId: x.v1Authorization?.id || '',
+        }))
+      writeFileSync(
+        localOptions.outUsersFile,
+        JSON.stringify(toWrite, null, 2),
+        {
+          encoding: 'utf-8',
+        }
       )
-    }
-    if (pair.user.hash) {
-      await postPassword(
-        pair?.v1Authorization?.id as string,
-        pair.user.hash,
-        true
-      )
-      logger.info(` password hash updated`)
-    }
-    if (userReadBuckets && userReadBuckets.length) {
-      logger.info(` read: ${userReadBuckets}`)
-    }
-    if (userWriteBuckets && userWriteBuckets.length) {
-      logger.info(` write: ${userWriteBuckets}`)
+      logger.info(localOptions.outUsersFile, 'written')
     }
   }
   if (localOptions.outMappingFile) {
@@ -173,20 +194,6 @@ async function create(): Promise<void> {
       {encoding: 'utf-8'}
     )
     logger.info(localOptions.outMappingFile, 'written')
-  }
-  if (localOptions.outUsersFile) {
-    logger.info('--- Write users file ---')
-    const toWrite = grantsToAuthorizations
-      .filter(x => !x.user.isAdmin)
-      .map(x => ({
-        name: x.user.name,
-        password: '',
-        authorizationId: x.v1Authorization?.id || '',
-      }))
-    writeFileSync(localOptions.outUsersFile, JSON.stringify(toWrite, null, 2), {
-      encoding: 'utf-8',
-    })
-    logger.info(localOptions.outUsersFile, 'written')
   }
   if (localOptions.outV1Meta) {
     logger.info('--- Write v1 inputs ---')
@@ -276,7 +283,16 @@ const cmdLine = {
       localOptions,
       'delete',
       'DO_DELETE',
-      `don't create but delete buckets and authorizations`,
+      `don't create but delete`,
+      undefined,
+      booleanOptionParser
+    ),
+    option(
+      'with-users',
+      localOptions,
+      'withUsers',
+      'WITH_USERS',
+      `read v1 users to create v1 user mappings in v2`,
       undefined,
       booleanOptionParser
     ),

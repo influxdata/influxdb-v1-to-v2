@@ -12,9 +12,10 @@ __Create v2 buckets out of v1 databases, maps v1 users to v2 authorizations__
 1.  observe console to see that
     - buckets are created for each database/retention policy pair
     - DBRP mappings are created in v2 to map v1 db/rp pairs to v2 buckets; this mapping is required for v1 API queries/writes to work properly
-    - v1 authorizations are created in v2 and maps v1 user grants (excluding admin users) to created v2 buckets
-    - user password cannot be migrated, use `--out-users` option to create file that you can later use to setup user passwords with
-      `set-passwords` utility
+    - when `--with-users` option is specified
+       - v1 authorizations are created in v2 and maps v1 user grants (excluding admin users) to created v2 buckets
+       - user password cannot be migrated, use `--out-users` option to create file that you can later use to setup user passwords with
+        `set-passwords` utility
 
 __Set passwords for migrated users__
 
